@@ -30,6 +30,32 @@ class AccessTokenPlugin(BasePlugin):
                 })
 
 
+def document_validation_error(f):
+    f.__validation_error_documentation_needed = True
+    return f
+
+
+class ValidationErrorPlugin(BasePlugin):
+    """marshmallow ValidationError가 발생할 수 있는 API(document_validation_error
+    데코레이터로 마킹합니다)에 관련 문서와 스키마를 붙여줍니다.
+    """
+
+    def path_helper(self, operations: dict, *, view, **kwargs):
+        for operation in operations.values():
+            responses = response = operation.setdefault('responses', {})
+            if getattr(view, '__validation_error_documentation_needed', False):
+                response = responses.setdefault(400, {})
+                response.setdefault(
+                    'description',
+                    '요청 검증에 실패함. `invalidFields` 항목에서 검증에 실패한 '
+                    '필드와 에러 메시지를 확인할 수 있습니다.',
+                )
+                response \
+                    .setdefault('content', {}) \
+                    .setdefault('application/json', {}) \
+                    .setdefault('schema', 'ValidationErrorSchema')
+
+
 spec = APISpec(
     title='example-web-server',
     version='0.1.0',
@@ -38,6 +64,7 @@ spec = APISpec(
         FlaskPlugin(),
         MarshmallowPlugin(),
         AccessTokenPlugin(),
+        ValidationErrorPlugin(),
     ],
 )
 

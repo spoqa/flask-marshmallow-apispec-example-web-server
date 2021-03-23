@@ -5,7 +5,9 @@ from marshmallow import fields
 from werkzeug.exceptions import Unauthorized
 
 from example_web_server.schema import BaseSchema
-from example_web_server.spec import DocumentedBlueprint
+from example_web_server.spec import (
+    DocumentedBlueprint, document_validation_error,
+)
 
 blueprint = DocumentedBlueprint('api', __name__)
 
@@ -60,6 +62,7 @@ get_secured_hello_args_schema = GetSecuredHelloArgsSchema()
 
 
 @blueprint.route('/secured/hello/')
+@document_validation_error
 @access_token_required
 def get_secured_hello() -> Response:
     """
@@ -107,6 +110,7 @@ post_hello_response_schema = PostHelloResponseSchema()
 
 
 @blueprint.route('/post/hello/', methods=['POST'])
+@document_validation_error
 @access_token_required
 def post_hello() -> Response:
     """
