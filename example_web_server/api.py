@@ -64,6 +64,9 @@ def get_secured_hello() -> Response:
     ---
     get:
       description: 인증과 URL 파라미터가 필요한 안녕! 을 받을 수 있는 API
+      parameters:
+      - in: query
+        schema: GetSecuredHelloArgsSchema
       responses:
         200:
           description: 안녕!
@@ -108,11 +111,17 @@ def post_hello() -> Response:
     ---
     post:
       description: 인증과 JSON 요청이 필요한 더 자세한 안녕! 을 받을 수 있는 API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: PostHelloRequestSchema
       responses:
         200:
           description: 더 자세한 안녕!
           content:
-            application/json: {}
+            application/json:
+              schema: PostHelloResponseSchema
     """
     payload = post_hello_request_schema.load(request.get_json())
     name = payload['name']
