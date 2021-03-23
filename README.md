@@ -64,6 +64,19 @@ Server: Werkzeug/1.0.1 Python/3.8.2
 
 자세한 API 동작은 `example_web_server/api.py` 코드를 참고해주세요.
 
+### OpenAPI Documentation
+
+```sh
+python build_apispec.py > spec.yaml
+```
+
+이렇게 생성된 YAML 문서 파일은 [Swagger Editor](https://editor.swagger.io) 등의
+OpenAPI 3.0 렌더러로 렌더링할 수 있습니다.
+
+[Redoc](https://github.com/Redocly/redoc)으로 렌더링한 결과물은
+[이 저장소의 깃헙 페이지](https://spoqa.github.io/flask-marshmallow-apispec-example-web-server/index.html)에서
+볼 수 있습니다.
+
 ## License
 
 _flask-marshmallow-apispec-example-web-server_ is distributed under the terms of the MIT License.
