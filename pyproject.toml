@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "example-web-server"
+version = "0.1.0"
+description = "Example web server with marshmallow and apispec"
+authors = ["Spoqa Creators <dev@spoqa.com>"]
+maintainers = ["rusty <rusty@spoqa.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/spoqa/flask-marshmallow-apispec-example-web-server"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+apispec = "^4.3.0"
+apispec-webframeworks = "^0.5.2"
+Flask = "^1.1.2"
+marshmallow = "^3.10.0"
+typeguard = "^2.11.1"
+Werkzeug = "^1.0.1"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.9.0"
+flake8-import-order-spoqa = "^1.5.0"
+pytest = "^6.2.2"
+pytest-cov = "^2.11.1"
+pytest-flake8 = "^1.0.7"
+PyYAML = "^5.4.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

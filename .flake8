@@ -1,0 +1,5 @@
+[flake8]
+exclude = .cache, .env, .git, .hg, .tox, .venv, __pycache__, env, venv
+max-line-length = 79
+import-order-style = spoqa
+application-import-names = example_web_server, tests
