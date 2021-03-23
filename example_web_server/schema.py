@@ -1,3 +1,5 @@
+import typing
+
 from marshmallow import Schema, fields
 
 from example_web_server.utils import camelcase
@@ -11,7 +13,22 @@ class CamelCaseSchema(Schema):
         field_obj.data_key = camelcase(field_obj.data_key or field_name)
 
 
-class BaseSchema(CamelCaseSchema):
+_VALIDATION_ON_DUMP_ENABLED = False
+
+
+class ValidateOnDumpSchema(Schema):
+    """테스트 도중에만 dump를 validate하는 schema.
+    """
+    def dump(self, obj: typing.Any, *, many: typing.Optional[bool] = None):
+        dumped = super().dump(obj, many=many)
+        if _VALIDATION_ON_DUMP_ENABLED:
+            errors = self.validate(dumped, many=many)
+            if errors:
+                raise Exception(errors)
+        return dumped
+
+
+class BaseSchema(CamelCaseSchema, ValidateOnDumpSchema):
     pass
 
 
