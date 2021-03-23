@@ -1,12 +1,13 @@
 import functools
 
-from flask import Blueprint, Response, jsonify, request
+from flask import Response, jsonify, request
 from marshmallow import fields
 from werkzeug.exceptions import Unauthorized
 
 from example_web_server.schema import BaseSchema
+from example_web_server.spec import DocumentedBlueprint
 
-blueprint = Blueprint('api', __name__)
+blueprint = DocumentedBlueprint('api', __name__)
 
 
 def check_access_token(access_token: str) -> bool:
@@ -59,6 +60,16 @@ get_secured_hello_args_schema = GetSecuredHelloArgsSchema()
 @blueprint.route('/secured/hello/')
 @access_token_required
 def get_secured_hello() -> Response:
+    """
+    ---
+    get:
+      description: 인증과 URL 파라미터가 필요한 안녕! 을 받을 수 있는 API
+      responses:
+        200:
+          description: 안녕!
+          content:
+            text/plain: {}
+    """
     payload = get_secured_hello_args_schema.load(request.args.to_dict())
     name = payload['name']
     return Response(f'Hello, sneaky {name}!', 200)
@@ -93,6 +104,16 @@ post_hello_response_schema = PostHelloResponseSchema()
 @blueprint.route('/post/hello/', methods=['POST'])
 @access_token_required
 def post_hello() -> Response:
+    """
+    ---
+    post:
+      description: 인증과 JSON 요청이 필요한 더 자세한 안녕! 을 받을 수 있는 API
+      responses:
+        200:
+          description: 더 자세한 안녕!
+          content:
+            application/json: {}
+    """
     payload = post_hello_request_schema.load(request.get_json())
     name = payload['name']
     mood = payload['mood']
