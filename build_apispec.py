@@ -5,7 +5,9 @@ import json
 from apispec.yaml_utils import YAMLDumper
 from yaml import dump as yaml_dump
 
+from example_web_server.api import get_hello
 from example_web_server.spec import spec
+from example_web_server.wsgi import create_wsgi_app
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -15,6 +17,8 @@ parser.add_argument('-j', '--json', action='store_true', default=False)
 
 def main():
     args = parser.parse_args()
+    app = create_wsgi_app()
+    spec.path(view=get_hello, app=app)
     if args.json:
         print(json.dumps(spec.to_dict(), ensure_ascii=False))
     else:

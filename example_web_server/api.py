@@ -30,6 +30,16 @@ def access_token_required(f):
 
 @blueprint.route('/hello/')
 def get_hello() -> Response:
+    """
+    ---
+    get:
+      description: 간단한 안녕! 을 받을 수 있는 API
+      responses:
+        200:
+          description: 간단한 안녕!
+          content:
+            text/plain: {}
+    """
     return Response('Hello, world!', 200)
 
 
