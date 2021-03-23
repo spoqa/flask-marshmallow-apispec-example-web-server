@@ -2,7 +2,7 @@ import functools
 
 from flask import Blueprint, Response, jsonify, request
 from marshmallow import fields
-from werkzeug.exceptions import BadRequest, Unauthorized
+from werkzeug.exceptions import Unauthorized
 
 from example_web_server.schema import BaseSchema
 
@@ -43,11 +43,14 @@ class GetSecuredHelloArgsSchema(BaseSchema):
     )
 
 
+get_secured_hello_args_schema = GetSecuredHelloArgsSchema()
+
+
 @blueprint.route('/secured/hello/')
 @access_token_required
 def get_secured_hello() -> Response:
-    payload = request.args.to_dict()
-    name = payload.get('name', 'unknown')
+    payload = get_secured_hello_args_schema.load(request.args.to_dict())
+    name = payload['name']
     return Response(f'Hello, sneaky {name}!', 200)
 
 
@@ -73,17 +76,18 @@ class PostHelloResponseSchema(BaseSchema):
     message = fields.String(required=True)
 
 
+post_hello_request_schema = PostHelloRequestSchema()
+post_hello_response_schema = PostHelloResponseSchema()
+
+
 @blueprint.route('/post/hello/', methods=['POST'])
 @access_token_required
 def post_hello() -> Response:
-    payload = request.get_json()
-    try:
-        name = payload['name']
-        mood = payload['mood']
-    except KeyError as e:
-        raise BadRequest() from e
+    payload = post_hello_request_schema.load(request.get_json())
+    name = payload['name']
+    mood = payload['mood']
     response = {
         'title': f'Hello, {name}!',
         'message': f'I hope your mood {mood!s} be better.',
     }
-    return jsonify(response)
+    return jsonify(post_hello_response_schema.dump(response))
