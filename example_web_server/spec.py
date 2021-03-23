@@ -81,6 +81,18 @@ class BasicInfoPlugin(BasePlugin):
             operation.setdefault('tags', []).append(blueprint_name)
 
 
+_NO_DOCUMENT_ERROR_ENABLED = False
+
+
+class NoDocumentErrorPlugin(BasePlugin):
+    """pytest로 테스트 하는 도중에 문서가 없는 API 엔드포인트가 있으면 exception을 발생시킵니다.
+    """
+
+    def path_helper(self, operations: dict, *, view, path, **kwargs):
+        if _NO_DOCUMENT_ERROR_ENABLED and len(operations) == 0:
+            raise Exception(f'No API documentation found for path `{path}`')
+
+
 spec = APISpec(
     title='example-web-server',
     version='0.1.0',
@@ -91,6 +103,7 @@ spec = APISpec(
         AccessTokenPlugin(),
         ValidationErrorPlugin(),
         BasicInfoPlugin(),
+        NoDocumentErrorPlugin(),
     ],
 )
 
