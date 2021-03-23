@@ -1,7 +1,33 @@
-from apispec import APISpec
+from apispec import APISpec, BasePlugin
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
 from flask import Blueprint
+
+
+class AccessTokenPlugin(BasePlugin):
+    """액세스 토큰을 사용하는 API 엔드포인트들에게 관련 문서를 자동으로 추가합니다.
+    """
+
+    def init_spec(self, spec: APISpec):
+        spec.components.security_scheme(
+            'access_token',
+            {
+                'type': 'apiKey',
+                'description': '액세스 토큰',
+                'name': 'X-Some-Access-Token',
+                'in': 'header',
+            },
+        )
+
+    def path_helper(self, operations: dict, *, view, **kwargs):
+        if getattr(view, '__access_token_required', False):
+            for operation in operations.values():
+                operation.setdefault('security', []).append({
+                    'access_token': [],
+                })
+                operation.setdefault('responses', {}).update({
+                    401: {'description': '액세스 토큰이 잘못됨'},
+                })
 
 
 spec = APISpec(
@@ -11,6 +37,7 @@ spec = APISpec(
     plugins=[
         FlaskPlugin(),
         MarshmallowPlugin(),
+        AccessTokenPlugin(),
     ],
 )
 

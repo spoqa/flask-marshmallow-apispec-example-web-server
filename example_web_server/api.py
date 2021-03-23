@@ -16,6 +16,8 @@ def check_access_token(access_token: str) -> bool:
 
 
 def access_token_required(f):
+    f.__access_token_required = True
+
     @functools.wraps(f)
     def decorated(*args, **kwargs):
         access_token = request.headers.get('X-Some-Access-Token')
