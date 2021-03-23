@@ -9,3 +9,7 @@ class CamelCaseSchema(Schema):
     """
     def on_bind_field(self, field_name: str, field_obj: fields.Field):
         field_obj.data_key = camelcase(field_obj.data_key or field_name)
+
+
+class BaseSchema(CamelCaseSchema):
+    pass
