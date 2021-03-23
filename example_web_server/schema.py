@@ -13,3 +13,14 @@ class CamelCaseSchema(Schema):
 
 class BaseSchema(CamelCaseSchema):
     pass
+
+
+class ValidationErrorSchema(BaseSchema):
+    invalid_fields = fields.Mapping(
+        keys=fields.String,
+        values=fields.List(fields.String),
+        metadata={
+            'description': '검증에 실패한 필드 이름과 에러 목록',
+            'example': {'someField': ['some error']},
+        },
+    )

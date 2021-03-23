@@ -43,6 +43,9 @@ def test_post_hello(fx_wsgi_app: Flask):
         json={'name': 'some_name'},
     )
     assert response.status_code == 400
+    assert response.get_json() == {
+        'invalidFields': {'mood': ['Missing data for required field.']},
+    }
 
     response = client.post(
         url,
