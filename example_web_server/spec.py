@@ -1,7 +1,11 @@
+import typing
+
 from apispec import APISpec, BasePlugin
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
 from flask import Blueprint
+
+from example_web_server.utils import camelcase
 
 
 class AccessTokenPlugin(BasePlugin):
@@ -56,6 +60,27 @@ class ValidationErrorPlugin(BasePlugin):
                     .setdefault('schema', 'ValidationErrorSchema')
 
 
+class BasicInfoPlugin(BasePlugin):
+    """operationId와 summary를 path와 엔드포인트 함수 이름에서 자동으로 생성합니다.
+    """
+
+    def path_helper(
+        self,
+        operations: dict,
+        *,
+        view: typing.Callable,
+        path: str,
+        blueprint_name: str,
+        **kwargs,
+    ):
+        for operation in operations.values():
+            operation_id = camelcase(view.__name__)
+            summary = path + ' ' + operation_id
+            operation.setdefault('operationId', operation_id)
+            operation.setdefault('summary', summary)
+            operation.setdefault('tags', []).append(blueprint_name)
+
+
 spec = APISpec(
     title='example-web-server',
     version='0.1.0',
@@ -65,6 +90,7 @@ spec = APISpec(
         MarshmallowPlugin(),
         AccessTokenPlugin(),
         ValidationErrorPlugin(),
+        BasicInfoPlugin(),
     ],
 )
 
@@ -93,4 +119,4 @@ class DocumentedBlueprint(Blueprint):
     def register(self, app, options, first_registration=False):
         super().register(app, options, first_registration=first_registration)
         for view_function in self.view_functions:
-            spec.path(view=view_function, app=app)
+            spec.path(view=view_function, app=app, blueprint_name=self.name)
